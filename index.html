@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CYB101 Prework Self-Check</title>
+<style>
+  :root {
+    --bg: #0f1419;
+    --card: #1a2027;
+    --fg: #e6edf3;
+    --muted: #9aa7b2;
+    --accent: #4da3ff;
+    --ok: #2ecc71;
+    --warn: #f5a623;
+    --bad: #ff5c5c;
+    --border: #2a323c;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding: 2rem 1rem;
+  }
+  .wrap { max-width: 640px; margin: 0 auto; }
+  h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
+  .sub { color: var(--muted); margin: 0 0 1.5rem; }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 1rem;
+  }
+  label { display: block; font-weight: 600; margin-bottom: .4rem; }
+  .hint { color: var(--muted); font-weight: 400; font-size: .85rem; }
+  input[type=text], input[type=email] {
+    width: 100%;
+    padding: .6rem .7rem;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--fg);
+    font-size: 1rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  input:focus { outline: none; border-color: var(--accent); }
+  .feedback { margin-top: .55rem; font-size: .92rem; min-height: 1.3em; }
+  .feedback.ok { color: var(--ok); }
+  .feedback.warn { color: var(--warn); }
+  .feedback.bad { color: var(--bad); }
+  button {
+    background: var(--accent);
+    color: #06121f;
+    border: none;
+    border-radius: 7px;
+    padding: .7rem 1.2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button:hover { filter: brightness(1.08); }
+  #result {
+    border: 1px solid var(--ok);
+    background: rgba(46, 204, 113, .08);
+    display: none;
+  }
+  #result.show { display: block; }
+  .code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: .15em;
+    color: var(--ok);
+    background: #0d1117;
+    padding: .5rem .8rem;
+    border-radius: 7px;
+    display: inline-block;
+    margin: .4rem 0;
+  }
+  a { color: var(--accent); }
+  .nojs {
+    border-color: var(--warn);
+    background: rgba(245, 166, 35, .08);
+    display: none;
+  }
+  .nojs.show { display: block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>CYB101 Prework Self-Check</h1>
+  <p class="sub">Enter your answers below to check them instantly. Nothing is sent anywhere &mdash; all checking happens in your browser.</p>
+
+  <div class="card nojs" id="insecure">
+    ⚠️ This checker needs a secure connection to run. Please open it from its published web link (an <code>https://</code> address) rather than a downloaded file.
+  </div>
+
+  <div class="card">
+    <label for="email">Your CodePath email
+      <span class="hint">&mdash; used to generate your magic code</span>
+    </label>
+    <input type="email" id="email" autocomplete="email" placeholder="you@example.com" spellcheck="false">
+  </div>
+
+  <div class="card">
+    <label for="c1">Challenge 1</label>
+    <input type="text" id="c1" spellcheck="false" autocapitalize="off" placeholder="Answer for challenge 1">
+    <div class="feedback" id="f1"></div>
+  </div>
+
+  <div class="card">
+    <label for="c2">Challenge 2</label>
+    <input type="text" id="c2" spellcheck="false" autocapitalize="off" placeholder="Answer for challenge 2">
+    <div class="feedback" id="f2"></div>
+  </div>
+
+  <div class="card">
+    <label for="c3">Challenge 3</label>
+    <input type="text" id="c3" spellcheck="false" autocapitalize="off" placeholder="Answer for challenge 3">
+    <div class="feedback" id="f3"></div>
+  </div>
+
+  <button id="check">Check Answers</button>
+
+  <div class="card" id="result">
+    <h1>🎉 CYB101 Prework complete!</h1>
+    <p>Your ✨ magic code is:</p>
+    <div class="code" id="magic">&mdash;</div>
+    <p>To receive credit, submit your challenge answers and magic code by following the
+       instructions at:<br>
+       <a href="https://courses.codepath.org/snippets/cyb101/prework" target="_blank" rel="noopener">
+       courses.codepath.org/snippets/cyb101/prework</a>
+    </p>
+  </div>
+</div>
+
+<script>
+  // ---- Configuration (edit these each term) ----------------------------------
+  const SALT = "+Sp25";
+  const SOLUTIONS = {
+    c1: "aca4fee155368758392aca3a58e5704c8650173981160328f27181fcf67b68e4",
+    c2: "fd65204fde7b3236df176170aaffb6116533b241c30ce28b910f9872b3f9747b",
+    c3: "6f93481fe2c111b1c44176bfa27e6461bf26668e0c6c31fab4a32fa8a4f663e5",
+  };
+  // ----------------------------------------------------------------------------
+
+  const enc = new TextEncoder();
+
+  async function sha256Hex(str) {
+    const buf = await crypto.subtle.digest("SHA-256", enc.encode(str));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+
+  // Faithful to Python's bytes.upper(): ASCII-only uppercasing.
+  function asciiUpper(s) {
+    return s.replace(/[a-z]/g, c => c.toUpperCase());
+  }
+
+  // Mirrors check_challenge() in the original prework.py:
+  //   exact match  -> correct
+  //   upper match  -> capitalization hint
+  //   strip match  -> extra-spaces hint
+  async function checkChallenge(value, solutionHash) {
+    if (await sha256Hex(value) === solutionHash)            return { state: "ok",   msg: "✅ Correct!" };
+    if (await sha256Hex(asciiUpper(value)) === solutionHash) return { state: "warn", msg: "🚧 So close — check your capitalization and try again." };
+    if (await sha256Hex(value.trim()) === solutionHash)      return { state: "warn", msg: "🚧 So close — check for extra spaces and try again." };
+    return { state: "bad", msg: "⛔ Sorry, that's not the right answer." };
+  }
+
+  // Mirrors the INTENDED magic-code logic: normalized (lowercased + trimmed) email + salt,
+  // last 6 hex chars. (The original script displayed a raw-bytes variant — see notes.)
+  async function magicCode(email) {
+    const norm = email.toLowerCase().trim();
+    return (await sha256Hex(norm + SALT)).slice(-6);
+  }
+
+  function setFeedback(el, res) {
+    el.className = "feedback " + res.state;
+    el.textContent = res.msg;
+  }
+
+  // Web Crypto requires a secure context (https:// or localhost).
+  if (!window.isSecureContext || !crypto.subtle) {
+    document.getElementById("insecure").classList.add("show");
+    document.getElementById("check").disabled = true;
+  }
+
+  document.getElementById("check").addEventListener("click", async () => {
+    const v1 = document.getElementById("c1").value;
+    const v2 = document.getElementById("c2").value;
+    const v3 = document.getElementById("c3").value;
+    const email = document.getElementById("email").value;
+
+    const r1 = await checkChallenge(v1, SOLUTIONS.c1);
+    const r2 = await checkChallenge(v2, SOLUTIONS.c2);
+    const r3 = await checkChallenge(v3, SOLUTIONS.c3);
+
+    setFeedback(document.getElementById("f1"), r1);
+    setFeedback(document.getElementById("f2"), r2);
+    setFeedback(document.getElementById("f3"), r3);
+
+    const allCorrect = r1.state === "ok" && r2.state === "ok" && r3.state === "ok";
+    const result = document.getElementById("result");
+
+    if (allCorrect && email.trim()) {
+      document.getElementById("magic").textContent = await magicCode(email);
+      result.classList.add("show");
+    } else if (allCorrect && !email.trim()) {
+      document.getElementById("magic").textContent = "— enter your email above —";
+      result.classList.add("show");
+    } else {
+      result.classList.remove("show");
+    }
+  });
+</script>
+</body>
+</html>
