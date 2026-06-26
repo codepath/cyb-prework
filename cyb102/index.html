@@ -6,90 +6,88 @@
 <title>CYB102 Prework Self-Check</title>
 <style>
   :root {
-    --bg: #0f1419;
-    --card: #1a2027;
-    --fg: #e6edf3;
-    --muted: #9aa7b2;
-    --accent: #4da3ff;
-    --ok: #2ecc71;
-    --warn: #f5a623;
-    --bad: #ff5c5c;
-    --border: #2a323c;
+    --bg: #0f1419; --card: #1a2027; --fg: #e6edf3; --muted: #9aa7b2;
+    --accent: #4da3ff; --ok: #2ecc71; --warn: #f5a623; --bad: #ff5c5c; --border: #2a323c;
   }
   * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--fg);
-    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    padding: 2rem 1rem;
+  body { margin:0; background:var(--bg); color:var(--fg);
+    font:16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    padding:2rem 1rem; }
+  .wrap { max-width:700px; margin:0 auto; }
+  h1 { font-size:1.5rem; margin:0 0 .25rem; }
+  .sub { color:var(--muted); margin:0 0 1.5rem; }
+  .card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1rem 1.1rem; margin-bottom:1rem; }
+  .clabel { font-weight:700; margin-bottom:.15rem; }
+  .task { color:var(--muted); font-size:.92rem; margin-bottom:.75rem; }
+  .builder { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+  select, input[type=text] {
+    padding:.5rem .6rem; background:#0d1117; border:1px solid var(--border); border-radius:7px;
+    color:var(--fg); font-size:.95rem; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   }
-  .wrap { max-width: 680px; margin: 0 auto; }
-  h1 { font-size: 1.5rem; margin: 0 0 .25rem; }
-  .sub { color: var(--muted); margin: 0 0 1.5rem; }
-  .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1rem 1.1rem; margin-bottom: 1rem; }
-  label { display: block; font-weight: 600; margin-bottom: .15rem; }
-  .task { color: var(--muted); font-weight: 400; font-size: .9rem; margin-bottom: .2rem; }
-  .form { color: var(--muted); font-weight: 400; font-size: .85rem; margin-bottom: .5rem; }
-  .form code { color: var(--accent); background: #0d1117; padding: .1rem .35rem; border-radius: 5px; }
-  input[type=text] {
-    width: 100%; padding: .6rem .7rem; background: #0d1117; border: 1px solid var(--border);
-    border-radius: 7px; color: var(--fg); font-size: 1rem;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  input:focus { outline: none; border-color: var(--accent); }
-  .feedback { margin-top: .55rem; font-size: .92rem; min-height: 1.3em; }
-  .feedback.ok { color: var(--ok); }
-  .feedback.warn { color: var(--warn); }
-  .feedback.bad { color: var(--bad); }
-  button {
-    background: var(--accent); color: #06121f; border: none; border-radius: 7px;
-    padding: .7rem 1.2rem; font-size: 1rem; font-weight: 700; cursor: pointer;
-  }
-  button:hover { filter: brightness(1.08); }
-  #result { border: 1px solid var(--ok); background: rgba(46, 204, 113, .08); display: none; }
-  #result.show { display: block; }
-  #result h1 { font-size: 1.3rem; }
-  .copybox {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .95rem;
-    background: #0d1117; padding: .7rem .8rem; border-radius: 7px; white-space: pre; overflow-x: auto;
-    border: 1px solid var(--border); margin: .5rem 0;
-  }
-  a { color: var(--accent); }
+  select:focus, input:focus { outline:none; border-color:var(--accent); }
+  input.msg { min-width:200px; flex:1; }
+  input.mode { width:120px; }
+  input.dest { width:150px; }
+  .preview { margin-top:.7rem; font-size:.9rem; color:var(--muted); }
+  .preview code { color:var(--fg); background:#0d1117; padding:.15rem .45rem; border-radius:5px;
+    font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+  .feedback { margin-top:.55rem; font-size:.92rem; min-height:1.3em; }
+  .feedback.ok { color:var(--ok); } .feedback.warn { color:var(--warn); } .feedback.bad { color:var(--bad); }
+  button { background:var(--accent); color:#06121f; border:none; border-radius:7px;
+    padding:.7rem 1.2rem; font-size:1rem; font-weight:700; cursor:pointer; }
+  button:hover { filter:brightness(1.08); }
+  #result { border:1px solid var(--ok); background:rgba(46,204,113,.08); display:none; }
+  #result.show { display:block; }
+  #result h1 { font-size:1.3rem; }
+  .copybox { font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:.95rem;
+    background:#0d1117; padding:.7rem .8rem; border-radius:7px; white-space:pre; overflow-x:auto;
+    border:1px solid var(--border); margin:.5rem 0; }
+  a { color:var(--accent); }
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>CYB102 Prework Self-Check</h1>
-  <p class="sub">Type the <code>bash</code> command you wrote for each challenge to check it instantly. Nothing is sent anywhere &mdash; all checking happens in your browser.</p>
+  <p class="sub">For each challenge, build the right command from the pieces. Figure out which tool fits the job &mdash; then check your work. Nothing is sent anywhere; all checking happens in your browser.</p>
 
-  <div class="card">
-    <label for="c1">Challenge 1 &mdash; Hello, my name is&hellip;</label>
-    <div class="task">Replace the contents of <code>intro.txt</code> with your own introduction, using <code>echo</code>.</div>
-    <div class="form">Required form: <code>echo "your introduction" &gt; intro.txt</code></div>
-    <input type="text" id="c1" spellcheck="false" autocapitalize="off" placeholder='echo "Hi, I&#39;m ..." > intro.txt'>
-    <div class="feedback" id="f1"></div>
+  <div class="card" data-ch="1">
+    <div class="clabel">Challenge 1 &mdash; Hello, my name is&hellip;</div>
+    <div class="task">Replace the contents of a file with your own introduction.</div>
+    <div class="builder">
+      <select class="cmd"></select>
+      <span class="operands"></span>
+    </div>
+    <div class="preview">&rarr; <code class="pv">&mdash;</code></div>
+    <div class="feedback"></div>
   </div>
 
-  <div class="card">
-    <label for="c2">Challenge 2 &mdash; Digital Sharpie</label>
-    <div class="task">Change the permissions of <code>permanent.txt</code> so no one can write to it, using <code>chmod</code> with <strong>octal</strong> (number) notation.</div>
-    <div class="form">Required form: <code>chmod &lt;octal&gt; permanent.txt</code></div>
-    <input type="text" id="c2" spellcheck="false" autocapitalize="off" placeholder="chmod 444 permanent.txt">
-    <div class="feedback" id="f2"></div>
+  <div class="card" data-ch="2">
+    <div class="clabel">Challenge 2 &mdash; Digital Sharpie</div>
+    <div class="task">Change a file's permissions so that no one can write to (edit) it.</div>
+    <div class="builder">
+      <select class="cmd"></select>
+      <span class="operands"></span>
+    </div>
+    <div class="preview">&rarr; <code class="pv">&mdash;</code></div>
+    <div class="feedback"></div>
   </div>
 
-  <div class="card">
-    <label for="c3">Challenge 3 &mdash; Backup Your Backups!</label>
-    <div class="task">Create a file called <code>copy.txt</code> that is a copy of <code>random.txt</code>, using <code>cp</code>.</div>
-    <div class="form">Required form: <code>cp random.txt copy.txt</code></div>
-    <input type="text" id="c3" spellcheck="false" autocapitalize="off" placeholder="cp random.txt copy.txt">
-    <div class="feedback" id="f3"></div>
+  <div class="card" data-ch="3">
+    <div class="clabel">Challenge 3 &mdash; Backup Your Backups!</div>
+    <div class="task">Make a copy of a file. The new file should be named <code>copy.txt</code>.</div>
+    <div class="builder">
+      <select class="cmd"></select>
+      <span class="operands"></span>
+    </div>
+    <div class="preview">&rarr; <code class="pv">&mdash;</code></div>
+    <div class="feedback"></div>
   </div>
 
   <button id="check">Check Answers</button>
 
   <div class="card" id="result">
     <h1>🎉 CYB102 Prework Task 1 complete!</h1>
-    <p>All three commands are valid. Copy them into the <strong>Part 1</strong> section of your submission doc:</p>
+    <p>Nice work figuring out each command. Copy these into the <strong>Part 1</strong> section of your submission doc:</p>
     <div class="copybox" id="summary"></div>
     <p>Then finish <strong>Task 2</strong> and submit by following the instructions at:<br>
        <a href="https://courses.codepath.org/snippets/cyb102/prework" target="_blank" rel="noopener">
@@ -99,70 +97,125 @@
 </div>
 
 <script>
-  // Challenge 1: echo "<non-empty text>" > intro.txt
-  function check1(raw) {
-    const s = raw.trim();
-    if (/^echo\s+"[^"]+"\s*>\s*intro\.txt$/.test(s))      return { state: "ok",   msg: "✅ Correct!" };
-    if (/^echo\s+"[^"]*"\s*>>\s*intro\.txt$/.test(s))     return { state: "warn", msg: "🚧 Use a single > (replace), not >> (which appends)." };
-    if (/^echo\s+'[^']*'\s*>\s*intro\.txt$/.test(s))      return { state: "warn", msg: '🚧 Use double quotes " " around your text, not single quotes.' };
-    if (/^echo\s+"\s*"\s*>\s*intro\.txt$/.test(s))        return { state: "warn", msg: "🚧 Add your introduction text between the quotes." };
-    if (/^echo\s+[^"]+>\s*intro\.txt$/.test(s))           return { state: "warn", msg: '🚧 Wrap your introduction in double quotes: echo "..." > intro.txt' };
-    if (/^echo\b/.test(s) && /intro\.txt/.test(s))        return { state: "warn", msg: '🚧 So close — expected form is: echo "your intro" > intro.txt' };
-    if (/^echo\b/.test(s))                                return { state: "warn", msg: "🚧 Make sure you redirect into intro.txt with > intro.txt" };
-    return { state: "bad", msg: '⛔ Not quite. Use echo to write into intro.txt — e.g. echo "Hi, I\'m ..." > intro.txt' };
+  const FILES = ["intro.txt", "permanent.txt", "random.txt"];
+  const COMMANDS = ["echo", "chmod", "cp"];
+
+  function opt(value, label, selected) {
+    return `<option value="${value}"${selected ? " selected" : ""}>${label}</option>`;
+  }
+  function fileSelect(cls) {
+    return `<select class="${cls}">` + opt("", "choose a file…") +
+      FILES.map(f => opt(f, f)).join("") + `</select>`;
   }
 
-  // Challenge 2: chmod <octal, no write bits> permanent.txt
-  function check2(raw) {
-    const s = raw.trim();
-    const m = s.match(/^chmod\s+([0-7]{3,4})\s+permanent\.txt$/);
-    if (m) {
-      const perms = m[1].slice(-3); // last 3 digits = user/group/other
-      const noWrite = [...perms].every(d => (parseInt(d, 8) & 2) === 0);
-      if (noWrite) return { state: "ok", msg: "✅ Correct!" };
-      return { state: "warn", msg: "🚧 That changes permissions, but write access is still allowed. Each of the 3 digits should be 0, 1, 4, or 5 so no one can write." };
+  // Operand slots depend on the chosen command, so the layout never reveals
+  // which command a challenge wants.
+  function operandsFor(cmd) {
+    if (cmd === "echo")
+      return `<input type="text" class="msg" placeholder="your introduction" spellcheck="false">` +
+             `<select class="op">${opt(">", ">")}${opt(">>", ">>")}</select>` +
+             fileSelect("file");
+    if (cmd === "chmod")
+      return `<input type="text" class="mode" placeholder="permissions" spellcheck="false" autocapitalize="off">` +
+             fileSelect("file");
+    if (cmd === "cp")
+      return fileSelect("src") +
+             `<input type="text" class="dest" placeholder="new file name" spellcheck="false" autocapitalize="off">`;
+    return "";
+  }
+
+  function assemble(card) {
+    const cmd = card.querySelector(".cmd").value;
+    if (!cmd) return "—";
+    const blank = "…";
+    if (cmd === "echo") {
+      const msg = (card.querySelector(".msg").value || "").replace(/"/g, "");
+      const op = card.querySelector(".op").value;
+      const file = card.querySelector(".file").value || blank;
+      return `echo "${msg}" ${op} ${file}`;
     }
-    if (/^chmod\s+[ugoa]*[-+=][rwxX]+/.test(s) && /permanent\.txt$/.test(s))
-      return { state: "warn", msg: "🚧 Please use octal (number) notation, e.g. chmod 444 permanent.txt." };
-    if (/^chmod\b/.test(s) && !/permanent\.txt$/.test(s))
-      return { state: "warn", msg: "🚧 Make sure your command targets permanent.txt." };
-    if (/^chmod\b/.test(s))
-      return { state: "warn", msg: "🚧 So close — expected form is: chmod <octal> permanent.txt (e.g. chmod 444 permanent.txt)." };
-    return { state: "bad", msg: "⛔ Not quite. Use chmod with octal notation to remove write access from permanent.txt." };
+    if (cmd === "chmod") {
+      const mode = card.querySelector(".mode").value || blank;
+      const file = card.querySelector(".file").value || blank;
+      return `chmod ${mode} ${file}`;
+    }
+    if (cmd === "cp") {
+      const src = card.querySelector(".src").value || blank;
+      const dest = card.querySelector(".dest").value || blank;
+      return `cp ${src} ${dest}`;
+    }
   }
 
-  // Challenge 3: cp random.txt copy.txt
-  function check3(raw) {
-    const s = raw.trim().replace(/\.\//g, ""); // tolerate ./ prefixes
-    if (/^cp\s+random\.txt\s+copy\.txt$/.test(s))         return { state: "ok",   msg: "✅ Correct!" };
-    if (/^cp\s+copy\.txt\s+random\.txt$/.test(s))         return { state: "warn", msg: "🚧 Arguments are reversed — it's cp <source> <destination>: cp random.txt copy.txt." };
-    if (/^cp\b/.test(s) && /random\.txt/.test(s) && /copy\.txt/.test(s))
-                                                          return { state: "warn", msg: "🚧 So close — expected exactly: cp random.txt copy.txt." };
-    if (/^cp\b/.test(s))                                  return { state: "warn", msg: "🚧 Copy random.txt to a new file copy.txt: cp random.txt copy.txt." };
-    return { state: "bad", msg: "⛔ Not quite. Use cp to copy random.txt to a new file copy.txt." };
+  function validate(n, card) {
+    const cmd = card.querySelector(".cmd").value;
+    const want = { 1: "echo", 2: "chmod", 3: "cp" }[n];
+    if (!cmd) return { state: "bad", msg: "Pick a command to get started." };
+    if (cmd !== want) {
+      const job = { 1: "changes what's *inside* a file", 2: "changes a file's *permissions*", 3: "*copies* a file" }[n];
+      return { state: "bad", msg: `⛔ That tool doesn't fit this job. Which command ${job}?` };
+    }
+    if (n === 1) {
+      const msg = (card.querySelector(".msg").value || "").trim();
+      const op = card.querySelector(".op").value;
+      const file = card.querySelector(".file").value;
+      if (!msg) return { state: "warn", msg: "🚧 Add your introduction text." };
+      if (!file) return { state: "warn", msg: "🚧 Choose which file to write into." };
+      if (file !== "intro.txt") return { state: "warn", msg: "🚧 Which file should hold your introduction?" };
+      if (op !== ">") return { state: "warn", msg: "🚧 You want to *replace* the contents, not add to the end. Which operator does that?" };
+      return { state: "ok", msg: "✅ Correct!" };
+    }
+    if (n === 2) {
+      const mode = (card.querySelector(".mode").value || "").trim();
+      const file = card.querySelector(".file").value;
+      if (!file) return { state: "warn", msg: "🚧 Choose which file to change." };
+      if (file !== "permanent.txt") return { state: "warn", msg: "🚧 Which file are you protecting?" };
+      if (!/^[0-7]{3,4}$/.test(mode)) return { state: "warn", msg: "🚧 Enter the permissions as an octal number." };
+      const noWrite = [...mode.slice(-3)].every(d => (parseInt(d, 8) & 2) === 0);
+      if (!noWrite) return { state: "warn", msg: "🚧 Someone can still write to the file. Make sure no one has write permission." };
+      return { state: "ok", msg: "✅ Correct!" };
+    }
+    if (n === 3) {
+      const src = card.querySelector(".src").value;
+      const dest = (card.querySelector(".dest").value || "").trim().replace(/^\.\//, "");
+      if (!src) return { state: "warn", msg: "🚧 Choose which file to copy." };
+      if (src !== "random.txt") return { state: "warn", msg: "🚧 Which file are you supposed to copy?" };
+      if (!dest) return { state: "warn", msg: "🚧 Name the new file you're creating." };
+      if (dest !== "copy.txt") return { state: "warn", msg: "🚧 The new file should be named copy.txt." };
+      return { state: "ok", msg: "✅ Correct!" };
+    }
   }
 
-  function setFeedback(el, res) {
-    el.className = "feedback " + res.state;
-    el.textContent = res.msg;
-  }
+  // Wire up each card
+  document.querySelectorAll(".card[data-ch]").forEach(card => {
+    const cmdSel = card.querySelector(".cmd");
+    cmdSel.innerHTML = opt("", "choose a command…") + COMMANDS.map(c => opt(c, c)).join("");
+    const refresh = () => { card.querySelector(".pv").textContent = assemble(card); };
+    cmdSel.addEventListener("change", () => {
+      card.querySelector(".operands").innerHTML = operandsFor(cmdSel.value);
+      card.querySelector(".operands").querySelectorAll("input,select").forEach(el => {
+        el.addEventListener("input", refresh);
+      });
+      refresh();
+    });
+    refresh();
+  });
 
   document.getElementById("check").addEventListener("click", () => {
-    const v1 = document.getElementById("c1").value;
-    const v2 = document.getElementById("c2").value;
-    const v3 = document.getElementById("c3").value;
-
-    const r1 = check1(v1), r2 = check2(v2), r3 = check3(v3);
-    setFeedback(document.getElementById("f1"), r1);
-    setFeedback(document.getElementById("f2"), r2);
-    setFeedback(document.getElementById("f3"), r3);
-
+    let allOk = true;
+    const cmds = [];
+    document.querySelectorAll(".card[data-ch]").forEach(card => {
+      const n = +card.dataset.ch;
+      const res = validate(n, card);
+      const fb = card.querySelector(".feedback");
+      fb.className = "feedback " + res.state;
+      fb.textContent = res.msg;
+      if (res.state === "ok") cmds[n - 1] = assemble(card);
+      else allOk = false;
+    });
     const result = document.getElementById("result");
-    if (r1.state === "ok" && r2.state === "ok" && r3.state === "ok") {
+    if (allOk) {
       document.getElementById("summary").textContent =
-        "Challenge 1: " + v1.trim() + "\n" +
-        "Challenge 2: " + v2.trim() + "\n" +
-        "Challenge 3: " + v3.trim();
+        cmds.map((c, i) => `Challenge ${i + 1}: ${c}`).join("\n");
       result.classList.add("show");
     } else {
       result.classList.remove("show");
