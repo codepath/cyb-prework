@@ -21,11 +21,15 @@
   .task { color:var(--muted); font-size:.92rem; margin-bottom:.75rem; }
   .builder { display:flex; flex-wrap:wrap; gap:.4rem; align-items:center; }
   .operands { display:contents; }
-  select, input[type=text] {
+  select, input[type=text], input[type=email] {
     padding:.5rem .55rem; background:#0d1117; border:1px solid var(--border); border-radius:7px;
     color:var(--fg); font-size:.95rem; min-width:0;
     font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
   select:focus, input:focus { outline:none; border-color:var(--accent); }
+  #email { width:100%; }
+  .code { font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:1.6rem;
+    font-weight:700; letter-spacing:.15em; color:var(--ok); background:#0d1117; padding:.5rem .8rem;
+    border-radius:7px; display:inline-block; margin:.4rem 0; }
   .cmd { flex:0 0 auto; }
   .msg { flex:2 1 110px; }
   .op  { flex:0 0 3.2rem; width:3.2rem; text-align:center; }
@@ -50,6 +54,12 @@
 <div class="wrap">
   <h1>CYB102 Prework Self-Check</h1>
   <p class="sub">For each challenge, build the right command from the pieces. Figure out which tool fits the job &mdash; then check your work. Nothing is sent anywhere; all checking happens in your browser.</p>
+
+  <div class="card">
+    <div class="clabel">Your CodePath email</div>
+    <div class="task">Used to generate your magic code &mdash; use the same email you applied with.</div>
+    <input type="email" id="email" autocomplete="email" placeholder="you@example.com" spellcheck="false">
+  </div>
 
   <div class="card" data-ch="1">
     <div class="clabel">Challenge 1 &mdash; Hello, my name is&hellip;</div>
@@ -76,9 +86,11 @@
 
   <div class="card" id="result">
     <h1>🎉 CYB102 Prework Task 1 complete!</h1>
-    <p>Nice work figuring out each command. Copy these into the <strong>Part 1</strong> section of your submission doc:</p>
+    <p>Nice work figuring out each command. Your ✨ magic code is:</p>
+    <div class="code" id="magic">&mdash;</div>
+    <p>Copy your commands <em>and</em> magic code into the <strong>Part 1</strong> section of your submission doc:</p>
     <div class="copybox" id="summary"></div>
-    <button id="copyBtn">Copy commands</button>
+    <button id="copyBtn">Copy all</button>
     <p>Then finish <strong>Task 2</strong> and submit by following the instructions at:<br>
        <a href="https://courses.codepath.org/snippets/cyb102/prework" target="_blank" rel="noopener">
        courses.codepath.org/snippets/cyb102/prework</a>
@@ -88,6 +100,17 @@
 
 <script>
   const COMMANDS = ["echo", "chmod", "cp"];
+  const SALT = "+Sp25"; // shared with CYB101 so Operations' verification tool works for both
+
+  const enc = new TextEncoder();
+  async function sha256Hex(str) {
+    const buf = await crypto.subtle.digest("SHA-256", enc.encode(str));
+    return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+  }
+  // Same as CYB101: last 6 chars of sha256(normalized email + salt).
+  async function magicCode(email) {
+    return (await sha256Hex(email.toLowerCase().trim() + SALT)).slice(-6);
+  }
 
   function opt(value, label) { return `<option value="${value}">${label}</option>`; }
 
@@ -182,7 +205,7 @@
     });
   });
 
-  document.getElementById("check").addEventListener("click", () => {
+  document.getElementById("check").addEventListener("click", async () => {
     let allOk = true;
     const cmds = [];
     document.querySelectorAll(".card[data-ch]").forEach(card => {
@@ -194,13 +217,22 @@
       if (res.state === "ok") cmds[n - 1] = assemble(card); else allOk = false;
     });
     const result = document.getElementById("result");
-    if (allOk) {
-      document.getElementById("summary").textContent =
-        cmds.map((c, i) => `Challenge ${i + 1}: ${c}`).join("\n");
-      result.classList.add("show");
-    } else {
-      result.classList.remove("show");
+    if (!allOk) { result.classList.remove("show"); return; }
+
+    const email = document.getElementById("email").value;
+    let code = null;
+    if (email.trim()) {
+      try { code = await magicCode(email); } catch (e) { code = null; }
     }
+    document.getElementById("magic").textContent =
+      !email.trim() ? "— enter your email above —"
+      : code ? code
+      : "— open this page on its web link to generate —";
+
+    const lines = cmds.map((c, i) => `Challenge ${i + 1}: ${c}`);
+    if (code) lines.push(`Magic code: ${code}`);
+    document.getElementById("summary").textContent = lines.join("\n");
+    result.classList.add("show");
   });
 
   async function copyText(text) {
