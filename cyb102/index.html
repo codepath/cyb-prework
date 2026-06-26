@@ -13,25 +13,25 @@
   body { margin:0; background:var(--bg); color:var(--fg);
     font:16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     padding:2rem 1rem; }
-  .wrap { max-width:700px; margin:0 auto; }
+  .wrap { max-width:720px; margin:0 auto; }
   h1 { font-size:1.5rem; margin:0 0 .25rem; }
   .sub { color:var(--muted); margin:0 0 1.5rem; }
   .card { background:var(--card); border:1px solid var(--border); border-radius:10px; padding:1rem 1.1rem; margin-bottom:1rem; }
   .clabel { font-weight:700; margin-bottom:.15rem; }
   .task { color:var(--muted); font-size:.92rem; margin-bottom:.75rem; }
-  .builder { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+  .builder { display:flex; flex-wrap:wrap; gap:.4rem; align-items:center; }
+  .operands { display:contents; }
   select, input[type=text] {
-    padding:.5rem .6rem; background:#0d1117; border:1px solid var(--border); border-radius:7px;
-    color:var(--fg); font-size:.95rem; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  }
-  select:focus, input:focus { outline:none; border-color:var(--accent); }
-  input.msg { min-width:200px; flex:1; }
-  input.mode { width:120px; }
-  input.dest { width:150px; }
-  .preview { margin-top:.7rem; font-size:.9rem; color:var(--muted); }
-  .preview code { color:var(--fg); background:#0d1117; padding:.15rem .45rem; border-radius:5px;
+    padding:.5rem .55rem; background:#0d1117; border:1px solid var(--border); border-radius:7px;
+    color:var(--fg); font-size:.95rem; min-width:0;
     font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
-  .feedback { margin-top:.55rem; font-size:.92rem; min-height:1.3em; }
+  select:focus, input:focus { outline:none; border-color:var(--accent); }
+  .cmd { flex:0 0 auto; }
+  .msg { flex:2 1 110px; }
+  .op  { flex:0 0 3.2rem; width:3.2rem; text-align:center; }
+  .mode { flex:0 0 6rem; width:6rem; }
+  .file, .src, .dest { flex:1 1 90px; }
+  .feedback { margin-top:.6rem; font-size:.92rem; min-height:1.3em; }
   .feedback.ok { color:var(--ok); } .feedback.warn { color:var(--warn); } .feedback.bad { color:var(--bad); }
   button { background:var(--accent); color:#06121f; border:none; border-radius:7px;
     padding:.7rem 1.2rem; font-size:1rem; font-weight:700; cursor:pointer; }
@@ -42,6 +42,7 @@
   .copybox { font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:.95rem;
     background:#0d1117; padding:.7rem .8rem; border-radius:7px; white-space:pre; overflow-x:auto;
     border:1px solid var(--border); margin:.5rem 0; }
+  #copyBtn { background:transparent; color:var(--accent); border:1px solid var(--accent); padding:.5rem 1rem; font-size:.9rem; }
   a { color:var(--accent); }
 </style>
 </head>
@@ -52,34 +53,22 @@
 
   <div class="card" data-ch="1">
     <div class="clabel">Challenge 1 &mdash; Hello, my name is&hellip;</div>
-    <div class="task">Replace the contents of a file with your own introduction.</div>
-    <div class="builder">
-      <select class="cmd"></select>
-      <span class="operands"></span>
-    </div>
-    <div class="preview">&rarr; <code class="pv">&mdash;</code></div>
+    <div class="task">Replace the contents of <code>intro.txt</code> with your own introduction.</div>
+    <div class="builder"><select class="cmd"></select><span class="operands"></span></div>
     <div class="feedback"></div>
   </div>
 
   <div class="card" data-ch="2">
     <div class="clabel">Challenge 2 &mdash; Digital Sharpie</div>
-    <div class="task">Change a file's permissions so that no one can write to (edit) it.</div>
-    <div class="builder">
-      <select class="cmd"></select>
-      <span class="operands"></span>
-    </div>
-    <div class="preview">&rarr; <code class="pv">&mdash;</code></div>
+    <div class="task">Change <code>permanent.txt</code>'s permissions so that no one can write to (edit) it. Use octal notation.</div>
+    <div class="builder"><select class="cmd"></select><span class="operands"></span></div>
     <div class="feedback"></div>
   </div>
 
   <div class="card" data-ch="3">
     <div class="clabel">Challenge 3 &mdash; Backup Your Backups!</div>
-    <div class="task">Make a copy of a file. The new file should be named <code>copy.txt</code>.</div>
-    <div class="builder">
-      <select class="cmd"></select>
-      <span class="operands"></span>
-    </div>
-    <div class="preview">&rarr; <code class="pv">&mdash;</code></div>
+    <div class="task">Copy <code>random.txt</code> into a new file named <code>copy.txt</code>.</div>
+    <div class="builder"><select class="cmd"></select><span class="operands"></span></div>
     <div class="feedback"></div>
   </div>
 
@@ -89,6 +78,7 @@
     <h1>🎉 CYB102 Prework Task 1 complete!</h1>
     <p>Nice work figuring out each command. Copy these into the <strong>Part 1</strong> section of your submission doc:</p>
     <div class="copybox" id="summary"></div>
+    <button id="copyBtn">Copy commands</button>
     <p>Then finish <strong>Task 2</strong> and submit by following the instructions at:<br>
        <a href="https://courses.codepath.org/snippets/cyb102/prework" target="_blank" rel="noopener">
        courses.codepath.org/snippets/cyb102/prework</a>
@@ -97,107 +87,99 @@
 </div>
 
 <script>
-  const FILES = ["intro.txt", "permanent.txt", "random.txt"];
   const COMMANDS = ["echo", "chmod", "cp"];
 
-  function opt(value, label, selected) {
-    return `<option value="${value}"${selected ? " selected" : ""}>${label}</option>`;
-  }
-  function fileSelect(cls) {
-    return `<select class="${cls}">` + opt("", "choose a file…") +
-      FILES.map(f => opt(f, f)).join("") + `</select>`;
-  }
+  function opt(value, label) { return `<option value="${value}">${label}</option>`; }
 
-  // Operand slots depend on the chosen command, so the layout never reveals
-  // which command a challenge wants.
+  // Operand slots depend on the chosen command, so the row never reveals which
+  // command a challenge wants. Only the command is a dropdown; everything else is typed.
   function operandsFor(cmd) {
     if (cmd === "echo")
-      return `<input type="text" class="msg" placeholder="your introduction" spellcheck="false">` +
-             `<select class="op">${opt(">", ">")}${opt(">>", ">>")}</select>` +
-             fileSelect("file");
+      return `<input type="text" class="msg"  placeholder="your introduction" spellcheck="false">` +
+             `<input type="text" class="op"   placeholder="?" spellcheck="false" autocapitalize="off">` +
+             `<input type="text" class="file" placeholder="file name" spellcheck="false" autocapitalize="off">`;
     if (cmd === "chmod")
       return `<input type="text" class="mode" placeholder="permissions" spellcheck="false" autocapitalize="off">` +
-             fileSelect("file");
+             `<input type="text" class="file" placeholder="file name" spellcheck="false" autocapitalize="off">`;
     if (cmd === "cp")
-      return fileSelect("src") +
-             `<input type="text" class="dest" placeholder="new file name" spellcheck="false" autocapitalize="off">`;
+      return `<input type="text" class="src"  placeholder="file name one" spellcheck="false" autocapitalize="off">` +
+             `<input type="text" class="dest" placeholder="file name two" spellcheck="false" autocapitalize="off">`;
     return "";
   }
 
+  const norm = v => (v || "").trim().replace(/^\.\//, "");
+  function fileState(v, expected) {
+    const s = norm(v);
+    if (!s) return "empty";
+    if (s === expected) return "ok";
+    if (s.toLowerCase() === expected.toLowerCase()) return "case";
+    return "wrong";
+  }
+  const CASE_MSG = "🚧 Almost — file names are case-sensitive.";
+  const FILE_MSG = "🚧 That's not the file this challenge works with — re-read the task.";
+
   function assemble(card) {
     const cmd = card.querySelector(".cmd").value;
-    if (!cmd) return "—";
-    const blank = "…";
     if (cmd === "echo") {
-      const msg = (card.querySelector(".msg").value || "").replace(/"/g, "");
-      const op = card.querySelector(".op").value;
-      const file = card.querySelector(".file").value || blank;
-      return `echo "${msg}" ${op} ${file}`;
+      const msg = (card.querySelector(".msg").value || "").replace(/"/g, "").trim();
+      return `echo "${msg}" ${card.querySelector(".op").value.trim()} ${norm(card.querySelector(".file").value)}`;
     }
-    if (cmd === "chmod") {
-      const mode = card.querySelector(".mode").value || blank;
-      const file = card.querySelector(".file").value || blank;
-      return `chmod ${mode} ${file}`;
-    }
-    if (cmd === "cp") {
-      const src = card.querySelector(".src").value || blank;
-      const dest = card.querySelector(".dest").value || blank;
-      return `cp ${src} ${dest}`;
-    }
+    if (cmd === "chmod")
+      return `chmod ${card.querySelector(".mode").value.trim()} ${norm(card.querySelector(".file").value)}`;
+    if (cmd === "cp")
+      return `cp ${norm(card.querySelector(".src").value)} ${norm(card.querySelector(".dest").value)}`;
   }
 
   function validate(n, card) {
     const cmd = card.querySelector(".cmd").value;
     const want = { 1: "echo", 2: "chmod", 3: "cp" }[n];
     if (!cmd) return { state: "bad", msg: "Pick a command to get started." };
-    if (cmd !== want) {
-      const job = { 1: "changes what's *inside* a file", 2: "changes a file's *permissions*", 3: "*copies* a file" }[n];
-      return { state: "bad", msg: `⛔ That tool doesn't fit this job. Which command ${job}?` };
-    }
+    if (cmd !== want)
+      return { state: "bad", msg: "⛔ That's not the right tool for this job — take another look at what each command does." };
     if (n === 1) {
       const msg = (card.querySelector(".msg").value || "").trim();
-      const op = card.querySelector(".op").value;
-      const file = card.querySelector(".file").value;
+      const op = (card.querySelector(".op").value || "").trim();
+      const f = fileState(card.querySelector(".file").value, "intro.txt");
       if (!msg) return { state: "warn", msg: "🚧 Add your introduction text." };
-      if (!file) return { state: "warn", msg: "🚧 Choose which file to write into." };
-      if (file !== "intro.txt") return { state: "warn", msg: "🚧 Which file should hold your introduction?" };
-      if (op !== ">") return { state: "warn", msg: "🚧 You want to *replace* the contents, not add to the end. Which operator does that?" };
+      if (!op) return { state: "warn", msg: "🚧 echo just prints to the screen by default. How do you make it write into the file instead?" };
+      if (op === ">>") return { state: "warn", msg: "🚧 That adds onto the end of the file instead of replacing what's there. Is that what the challenge asks for?" };
+      if (op !== ">") return { state: "warn", msg: "🚧 That won't send echo's output into the file — keep experimenting." };
+      if (f === "empty") return { state: "warn", msg: "🚧 Type the name of the file to write into." };
+      if (f === "case") return { state: "warn", msg: CASE_MSG };
+      if (f === "wrong") return { state: "warn", msg: FILE_MSG };
       return { state: "ok", msg: "✅ Correct!" };
     }
     if (n === 2) {
       const mode = (card.querySelector(".mode").value || "").trim();
-      const file = card.querySelector(".file").value;
-      if (!file) return { state: "warn", msg: "🚧 Choose which file to change." };
-      if (file !== "permanent.txt") return { state: "warn", msg: "🚧 Which file are you protecting?" };
-      if (!/^[0-7]{3,4}$/.test(mode)) return { state: "warn", msg: "🚧 Enter the permissions as an octal number." };
+      const f = fileState(card.querySelector(".file").value, "permanent.txt");
+      if (f === "empty") return { state: "warn", msg: "🚧 Type the name of the file to change." };
+      if (f === "case") return { state: "warn", msg: CASE_MSG };
+      if (f === "wrong") return { state: "warn", msg: FILE_MSG };
+      if (!/^[0-7]{3,4}$/.test(mode)) return { state: "warn", msg: "🚧 Enter the permissions as an octal number (three digits)." };
       const noWrite = [...mode.slice(-3)].every(d => (parseInt(d, 8) & 2) === 0);
-      if (!noWrite) return { state: "warn", msg: "🚧 Someone can still write to the file. Make sure no one has write permission." };
+      if (!noWrite) return { state: "warn", msg: "🚧 Those permissions still let someone edit the file. Think about who can still write to it." };
       return { state: "ok", msg: "✅ Correct!" };
     }
     if (n === 3) {
-      const src = card.querySelector(".src").value;
-      const dest = (card.querySelector(".dest").value || "").trim().replace(/^\.\//, "");
-      if (!src) return { state: "warn", msg: "🚧 Choose which file to copy." };
-      if (src !== "random.txt") return { state: "warn", msg: "🚧 Which file are you supposed to copy?" };
-      if (!dest) return { state: "warn", msg: "🚧 Name the new file you're creating." };
-      if (dest !== "copy.txt") return { state: "warn", msg: "🚧 The new file should be named copy.txt." };
+      const src = norm(card.querySelector(".src").value);
+      const dest = norm(card.querySelector(".dest").value);
+      if (!src || !dest) return { state: "warn", msg: "🚧 Fill in both file names." };
+      if (src === "copy.txt" && dest === "random.txt")
+        return { state: "warn", msg: "🚧 Check the order — which file already exists, and which one are you creating?" };
+      const sf = fileState(src, "random.txt"), df = fileState(dest, "copy.txt");
+      if (sf === "case" || df === "case") return { state: "warn", msg: CASE_MSG };
+      if (sf !== "ok") return { state: "warn", msg: "🚧 The first file should be the one you're copying. Which file already exists?" };
+      if (df !== "ok") return { state: "warn", msg: "🚧 Re-check the name of the new file you're creating." };
       return { state: "ok", msg: "✅ Correct!" };
     }
   }
 
-  // Wire up each card
   document.querySelectorAll(".card[data-ch]").forEach(card => {
     const cmdSel = card.querySelector(".cmd");
-    cmdSel.innerHTML = opt("", "choose a command…") + COMMANDS.map(c => opt(c, c)).join("");
-    const refresh = () => { card.querySelector(".pv").textContent = assemble(card); };
+    cmdSel.innerHTML = opt("", "command…") + COMMANDS.map(c => opt(c, c)).join("");
     cmdSel.addEventListener("change", () => {
       card.querySelector(".operands").innerHTML = operandsFor(cmdSel.value);
-      card.querySelector(".operands").querySelectorAll("input,select").forEach(el => {
-        el.addEventListener("input", refresh);
-      });
-      refresh();
     });
-    refresh();
   });
 
   document.getElementById("check").addEventListener("click", () => {
@@ -209,8 +191,7 @@
       const fb = card.querySelector(".feedback");
       fb.className = "feedback " + res.state;
       fb.textContent = res.msg;
-      if (res.state === "ok") cmds[n - 1] = assemble(card);
-      else allOk = false;
+      if (res.state === "ok") cmds[n - 1] = assemble(card); else allOk = false;
     });
     const result = document.getElementById("result");
     if (allOk) {
@@ -220,6 +201,36 @@
     } else {
       result.classList.remove("show");
     }
+  });
+
+  async function copyText(text) {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch (e) {}
+    try {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      const ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      return ok;
+    } catch (e) { return false; }
+  }
+
+  document.getElementById("copyBtn").addEventListener("click", async () => {
+    const b = document.getElementById("copyBtn"), o = b.textContent;
+    const ok = await copyText(document.getElementById("summary").textContent);
+    if (!ok) {
+      const range = document.createRange();
+      range.selectNodeContents(document.getElementById("summary"));
+      const sel = window.getSelection();
+      sel.removeAllRanges(); sel.addRange(range);
+    }
+    b.textContent = ok ? "Copied!" : "Press Ctrl/Cmd+C";
+    setTimeout(() => { b.textContent = o; }, 1800);
   });
 </script>
 </body>
